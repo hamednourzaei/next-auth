@@ -1,20 +1,22 @@
 'use client'
 import { useState } from 'react'
 
+type TaskStatus = 'todo' | 'inProgress' | 'done'
+
 type Task = {
   id: string
   content: string
-  status: string
+  status: TaskStatus
 }
 
 export function useBoard() {
-  const [columns, setColumns] = useState<{ [key: string]: Task[] }>({
+  const [columns, setColumns] = useState<{ [key in TaskStatus]: Task[] }>({
     todo: [],
     inProgress: [],
     done: [],
   })
 
-  const moveTask = (id: string, from: string, to: string) => {
+  const moveTask = (id: string, from: TaskStatus, to: TaskStatus) => {
     setColumns(prev => {
       const task = prev[from].find(t => t.id === id)
       if (!task) return prev
@@ -33,7 +35,7 @@ export function useBoard() {
     }))
   }
 
-  const removeTask = (id: string, from: string) => {
+  const removeTask = (id: string, from: TaskStatus) => {
     setColumns(prev => ({
       ...prev,
       [from]: prev[from].filter(t => t.id !== id),

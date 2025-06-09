@@ -2,10 +2,12 @@
 
 import { create } from 'zustand'
 
+export type TaskStatus = 'todo' | 'inProgress' | 'done'
+
 export type Task = {
   id: string
   content: string
-  status: 'todo' | 'inProgress' | 'done'
+  status: TaskStatus
 }
 
 type Columns = {

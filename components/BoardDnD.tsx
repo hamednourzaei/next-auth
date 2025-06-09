@@ -8,14 +8,7 @@ import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { moveTaskAction, addTaskAction, removeTaskAction } from '@/app/board/actions'
 import { useRouter } from 'next/navigation'
 import { AddTaskForm } from './AddTaskForm'
-
-type TaskStatus = 'todo' | 'inProgress' | 'done'
-
-type Task = {
-  id: string
-  content: string
-  status: TaskStatus
-}
+import type {  TaskStatus } from '@/lib/types' // فقط import تایپ‌ها
 
 export default function BoardDnD() {
   const { columns, moveTask, addTask, removeTask } = useBoard()
@@ -24,38 +17,34 @@ export default function BoardDnD() {
   const [loadingStatus, setLoadingStatus] = useState<TaskStatus | null>(null)
   const sensors = useSensors(useSensor(PointerSensor))
 
-  // جابجایی تسک
   async function handleMoveTask(id: string, from: TaskStatus, to: TaskStatus) {
     if (from === to) return
-    moveTask(id, from, to) // optimistic UI
+    moveTask(id, from, to)
     setLoadingStatus(to)
     try {
       await moveTaskAction(id, from, to)
       startTransition(() => router.refresh())
     } catch (error) {
       console.error(error)
-      moveTask(id, to, from) // rollback
+      moveTask(id, to, from)
     } finally {
       setLoadingStatus(null)
     }
   }
 
-  // حذف تسک
   async function handleRemoveTask(id: string, from: TaskStatus) {
-    removeTask(id, from) // optimistic UI
+    removeTask(id, from)
     setLoadingStatus(from)
     try {
       await removeTaskAction(id)
       startTransition(() => router.refresh())
     } catch (error) {
       console.error(error)
-      // optionally rollback
     } finally {
       setLoadingStatus(null)
     }
   }
 
-  // اضافه کردن تسک به ستون مشخص
   async function handleAddTask(content: string, status: TaskStatus) {
     setLoadingStatus(status)
     try {
@@ -88,7 +77,6 @@ export default function BoardDnD() {
           <div key={status} className="w-1/3 flex flex-col bg-gray-50 rounded-lg shadow p-4">
             <h2 className="text-xl font-semibold mb-4">{statusTitles[status]}</h2>
 
-            {/* فرم اضافه کردن تسک مخصوص هر ستون */}
             <AddTaskForm
               onAdd={(content) => handleAddTask(content, status)}
               loading={loadingStatus === status || isPending}
@@ -111,5 +99,3 @@ export default function BoardDnD() {
     </div>
   )
 }
-
-// اضافه کن AddTaskForm که پایین برات میفرستم

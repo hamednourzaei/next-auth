@@ -1,19 +1,14 @@
 'use client'
 
 import React from 'react'
-
-type Task = {
-  id: string
-  content: string
-  status: 'todo' | 'inProgress' | 'done'
-}
+import type { Task, TaskStatus } from '@/lib/types'
 
 type ColumnProps = {
   id: string
   title: string
   tasks: Task[]
-  onMoveTask: (id: string, from: 'todo' | 'inProgress' | 'done', to: 'todo' | 'inProgress' | 'done') => Promise<void>
-  onRemoveTask: (id: string, from: 'todo' | 'inProgress' | 'done') => Promise<void>
+  onMoveTask: (id: string, from: TaskStatus, to: TaskStatus) => Promise<void>
+  onRemoveTask: (id: string, from: TaskStatus) => Promise<void>
   loading?: boolean
 }
 

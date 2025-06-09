@@ -3,10 +3,12 @@
 import { FC } from 'react'
 import { useDraggable } from '@dnd-kit/core'
 
+type TaskStatus = 'todo' | 'inProgress' | 'done'
+
 type Task = {
   id: string
   content: string
-  status: string
+  status: TaskStatus
 }
 
 interface TaskCardProps {
