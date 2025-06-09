@@ -2,9 +2,8 @@ import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import GitHubProvider from "next-auth/providers/github"
 import type { NextAuthOptions } from "next-auth"
-import type { JWT } from "next-auth/jwt"
 
-export const authOptions: NextAuthOptions = {
+const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -14,10 +13,8 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials) return null
-
         const { email, password } = credentials
 
-        // 🔐 اعتبارسنجی تستی ساده
         if (email === "test@example.com" && password === "password") {
           return { id: "1", name: "کاربر آزمایشی", email }
         }
@@ -31,27 +28,20 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
     }),
   ],
-
-  session: {
-    strategy: "jwt",
-  },
-
+  session: { strategy: "jwt" },
   callbacks: {
     async jwt({ token, user }) {
-      if (user) token.id = (user as any).id
+      if (user) token.id = user.id
       return token
     },
-
     async session({ session, token }) {
-      if (session.user && token.id) {
-        ;(session.user as any).id = token.id
-      }
+      if (session.user) session.user.id = token.id as string
       return session
     },
   },
-
   secret: process.env.NEXTAUTH_SECRET,
 }
 
+// فقط handler رو export کن
 const handler = NextAuth(authOptions)
 export { handler as GET, handler as POST }
